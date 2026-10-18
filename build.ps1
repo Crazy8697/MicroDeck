@@ -239,8 +239,18 @@ try {
             gh release upload "v$ver" $a --repo $PublicRepo
             if ($LASTEXITCODE -ne 0) { throw "Uploading $a failed; the release is still a draft on $PublicRepo." }
         }
-        $got = (gh release view "v$ver" --repo $PublicRepo --json assets --jq ".assets[].name") -join ", "
-        if ($got -ne $names) { throw "Assets are '$got', not '$names'; the release is still a draft." }
+        # GitHub lists assets by name, not upload order: compare the sets, then every asset's sha256 digest
+        # (no double quotes in the jq: PowerShell 5.1 drops them on the way to a native program)
+        $listed = gh release view "v$ver" --repo $PublicRepo --json assets --jq '.assets[] | [.name, .digest] | @tsv'
+        $want = @{}
+        foreach ($a in $assets) { $want[(Split-Path $a -Leaf)] = "sha256:" + (Get-FileHash $a -Algorithm SHA256).Hash.ToLower() }
+        $seen = @{}
+        foreach ($line in $listed) { $n, $d = $line -split "`t", 2; $seen[$n] = $d }
+        $got = ($seen.Keys | Sort-Object) -join ", "
+        if ($got -ne (($want.Keys | Sort-Object) -join ", ")) { throw "Assets are '$got', not '$names'; the release is still a draft." }
+        foreach ($n in $want.Keys) {
+            if ($seen[$n] -ne $want[$n]) { throw "$n on GitHub ($($seen[$n])) isn't the local file ($($want[$n])); the release is still a draft." }
+        }
         gh release edit "v$ver" --repo $PublicRepo --draft=false --prerelease=false --latest
         if ($LASTEXITCODE -ne 0) { throw "Publishing the draft failed; it is still a draft on $PublicRepo." }
         Write-Host "Released v$ver on ${PublicRepo}: $got"
