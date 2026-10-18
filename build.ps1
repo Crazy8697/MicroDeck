@@ -3,8 +3,8 @@
 # Build MicroDeck's signed release APK and, with -Release, publish it, the Lazarus PDF / PhoneDeck way.
 #   .\build.ps1                  clean signed release build (app\build is gitignored), privacy check on the tree,
 #                                the public set and the APK, apksigner check against the release certificate,
-#                                then MicroDeck-x.y.z.apk + MicroDeck.apk (the constant name the update check and
-#                                download links use), each with a .sha256, into -OutDir
+#                                then MicroDeck.apk (the one name the update check, Obtainium and the download links
+#                                use, on every release) and its .sha256 into -OutDir
 #                                (default: Downloads\MicroDeck\x.y.z). Refuses when vx.y.z is already tagged on
 #                                Forgejo or released on GitHub, so a rebuild never replaces published files.
 #   .\build.ps1 -PrivacyCheck    only tools\privacy_check.py --public (and --dist if an APK is built)
@@ -18,8 +18,8 @@
 #                                     applies), fenced and privacy checked, copied into the public clone in
 #                                     -PublicDir as ONE commit "MicroDeck x.y.z" by the GitHub noreply identity,
 #                                     plain push to Crazy8697/MicroDeck main (never forced),
-#                                  2. release vx.y.z on that commit: a draft, the four assets uploaded in order
-#                                     (MicroDeck.apk, MicroDeck.apk.sha256, MicroDeck-x.y.z.apk, its .sha256), checked,
+#                                  2. release vx.y.z on that commit: a draft, exactly two assets uploaded in order
+#                                     (MicroDeck.apk, MicroDeck.apk.sha256; no versioned copies since 0.13.0), checked,
 #                                     then published as the latest release (not a pre-release), notes from the file,
 #                                  3. tag vx.y.z on the private commit, pushed to Forgejo (origin) only.
 #                                -DryRun does every check and the build, exports and checks the public tree in a temp
@@ -181,11 +181,11 @@ try {
     # 3. privacy: the public set and the APK
     Invoke-Privacy @("--public", "--dist")
 
-    # 4. the files: versioned and constant names, each with a .sha256 ("<hash> *<name>")
+    # 4. the files: MicroDeck.apk and its .sha256 ("<hash> *MicroDeck.apk"); the tag says which version it is
     if ($DryRun -and (Test-Path $OutDir)) { Remove-Item $OutDir -Recurse -Force }
     New-Item -ItemType Directory -Force $OutDir | Out-Null
     $assets = @()
-    foreach ($name in @("MicroDeck.apk", "MicroDeck-$ver.apk")) {
+    foreach ($name in @("MicroDeck.apk")) {
         $dst = Join-Path $OutDir $name
         Copy-Item $apk $dst -Force
         $hash = (Get-FileHash $dst -Algorithm SHA256).Hash.ToLower()

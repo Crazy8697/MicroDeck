@@ -6,12 +6,17 @@ import org.json.JSONObject
  * The rules for GitHub's releases/latest answer: which release, if any, to offer. No Android UI or
  * network here, so it can be unit tested. A release is offered only when it is not a draft or a
  * pre-release, its tag is a newer version than the installed one, and it carries both MicroDeck.apk
- * and MicroDeck.apk.sha256.
+ * and MicroDeck.apk.sha256 (every release has exactly those two files). The APK is downloaded from
+ * the tag's fixed path, DOWNLOAD_BASE/<tag>/MicroDeck.apk, not from a URL the answer supplies.
  */
 object UpdateCheck {
 
     const val ASSET_APK = "MicroDeck.apk"
     const val ASSET_SHA256 = "MicroDeck.apk.sha256"
+    const val DOWNLOAD_BASE = "https://github.com/Crazy8697/MicroDeck/releases/download"
+
+    /** Where a release's APK is: the tag path with the fixed asset name. */
+    fun apkUrl(tag: String) = "$DOWNLOAD_BASE/$tag/$ASSET_APK"
 
     data class Release(val version: String, val apkUrl: String, val notesUrl: String)
 
@@ -55,22 +60,13 @@ object UpdateCheck {
     fun parseRelease(body: String): Release? {
         val o = JSONObject(body)
         if (o.optBoolean("draft", false) || o.optBoolean("prerelease", false)) return null
-        val tag = o.optString("tag_name", "")
-        val version = parseVersion(tag)?.let { tag.trim().removePrefix("v").removePrefix("V") } ?: return null
+        val tag = o.optString("tag_name", "").trim()
+        val version = parseVersion(tag)?.let { tag.removePrefix("v").removePrefix("V") } ?: return null
         val notes = o.optString("html_url", "").takeIf { isWebUrl(it) } ?: return null
         val assets = o.optJSONArray("assets") ?: return null
-        var apk: String? = null
-        var sha: String? = null
-        for (i in 0 until assets.length()) {
-            val a = assets.optJSONObject(i) ?: continue
-            val url = a.optString("browser_download_url", "").takeIf { isWebUrl(it) } ?: continue
-            when (a.optString("name", "")) {
-                ASSET_APK -> apk = url
-                ASSET_SHA256 -> sha = url
-            }
-        }
-        if (apk == null || sha == null) return null
-        return Release(version, apk, notes)
+        val names = (0 until assets.length()).mapNotNull { assets.optJSONObject(it)?.optString("name", "") }.toSet()
+        if (ASSET_APK !in names || ASSET_SHA256 !in names) return null
+        return Release(version, apkUrl(tag), notes)
     }
 
     /** What to show for a 200 answer's body, given the installed versionName. */

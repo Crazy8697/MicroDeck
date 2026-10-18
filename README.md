@@ -21,6 +21,15 @@ Installing:
 MicroDeck checks this page for new versions and shows a bar when one is out; the update downloads
 through your browser the same way.
 
+### Install with Obtainium
+
+[Obtainium](https://github.com/ImranR98/Obtainium) is an open-source app that installs and updates
+apps straight from GitHub releases. With it installed on your phone, open
+**[Add MicroDeck to Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/Crazy8697/MicroDeck)**.
+
+If you already installed MicroDeck from your browser, Obtainium can take over its updates: it's the
+same app with the same signing key.
+
 ## What it does
 
 Pick the macro, main or telephoto lens, zoom with the slider or a pinch, and use autofocus or set the
@@ -28,7 +37,8 @@ focus by hand. Adjust exposure and white balance (and lock it), turn on the grid
 parts, and light your work with the torch, at an adjustable brightness on phones that support it.
 Freeze or rotate the image, and save snapshots to your gallery (Pictures/MicroDeck).
 
-The controls are large, so it also works well with a mouse through a screen mirror on a PC monitor.
+The controls are large, so it also works well with a mouse through PhoneDeck or another screen mirror
+on a PC monitor.
 
 ## Privacy
 

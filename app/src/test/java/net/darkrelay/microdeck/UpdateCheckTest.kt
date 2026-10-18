@@ -14,7 +14,7 @@ class UpdateCheckTest {
         tag: String = "v99.0.0",
         draft: Boolean = false,
         prerelease: Boolean = false,
-        assets: List<String> = listOf("MicroDeck.apk", "MicroDeck.apk.sha256", "MicroDeck-99.0.0.apk"),
+        assets: List<String> = listOf("MicroDeck.apk", "MicroDeck.apk.sha256"),
         htmlUrl: String = "https://example.com/releases/tag/v99.0.0",
     ) = """
         {"tag_name":"$tag","draft":$draft,"prerelease":$prerelease,"html_url":"$htmlUrl",
@@ -46,14 +46,27 @@ class UpdateCheckTest {
         assertTrue(r is Result.Available)
         val rel = (r as Result.Available).release
         assertEquals("99.0.0", rel.version)
-        assertEquals("https://example.com/download/MicroDeck.apk", rel.apkUrl)
+        // always the tag path with the fixed name, never the answer's own download URL
+        assertEquals("https://github.com/Crazy8697/MicroDeck/releases/download/v99.0.0/MicroDeck.apk", rel.apkUrl)
         assertEquals("https://example.com/releases/tag/v99.0.0", rel.notesUrl)
+    }
+
+    @Test fun downloadUsesTheTagAsWritten() {
+        val r = UpdateCheck.evaluate(body(tag = "99.1.0"), "0.9.0") as Result.Available
+        assertEquals("https://github.com/Crazy8697/MicroDeck/releases/download/99.1.0/MicroDeck.apk", r.release.apkUrl)
+        assertEquals("99.1.0", r.release.version)
+    }
+
+    @Test fun extraAssetsDoNotMatter() {
+        // the older layout with versioned copies is still a valid release
+        val r = UpdateCheck.evaluate(body(assets = listOf("MicroDeck.apk", "MicroDeck.apk.sha256", "MicroDeck-99.0.0.apk")), "0.9.0")
+        assertTrue(r is Result.Available)
     }
 
     @Test fun missingApkOrSha256IsNotOffered() {
         assertEquals(Result.UpToDate, UpdateCheck.evaluate(body(assets = listOf("MicroDeck.apk.sha256")), "0.9.0"))
         assertEquals(Result.UpToDate, UpdateCheck.evaluate(body(assets = listOf("MicroDeck.apk")), "0.9.0"))
-        assertEquals(Result.UpToDate, UpdateCheck.evaluate(body(assets = listOf("MicroDeck-99.0.0.apk")), "0.9.0"))
+        assertEquals(Result.UpToDate, UpdateCheck.evaluate(body(assets = listOf("MicroDeck-99.0.0.apk", "MicroDeck-99.0.0.apk.sha256")), "0.9.0"))
         assertEquals(Result.UpToDate, UpdateCheck.evaluate(body(assets = emptyList()), "0.9.0"))
     }
 

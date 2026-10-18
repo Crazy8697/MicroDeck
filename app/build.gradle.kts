@@ -31,8 +31,8 @@ android {
         applicationId = "net.darkrelay.microdeck"
         minSdk = 33
         targetSdk = 36
-        versionCode = 10
-        versionName = "0.12.0"
+        versionCode = 11
+        versionName = "0.13.0"
         buildConfigField("String", "UPDATE_URL", "\"$updateUrl\"")
         manifestPlaceholders["cleartext"] = updateUrl.startsWith("http://").toString()
     }
