@@ -5,7 +5,8 @@
 #                                the public set and the APK, apksigner check against the release certificate,
 #                                then MicroDeck-x.y.z.apk + MicroDeck.apk (the constant name the update check and
 #                                download links use), each with a .sha256, into -OutDir
-#                                (default: Downloads\MicroDeck\x.y.z)
+#                                (default: Downloads\MicroDeck\x.y.z). Refuses when vx.y.z is already tagged on
+#                                Forgejo or released on GitHub, so a rebuild never replaces published files.
 #   .\build.ps1 -PrivacyCheck    only tools\privacy_check.py --public (and --dist if an APK is built)
 #   .\build.ps1 -Release -Version x.y.z [-DryRun]
 #                                publish. Refuses unless x.y.z is the versionName in app\build.gradle.kts, the tree
@@ -23,7 +24,8 @@
 #                                  3. tag vx.y.z on the private commit, pushed to Forgejo (origin) only.
 #                                -DryRun does every check and the build, exports and checks the public tree in a temp
 #                                folder, and prints exactly what steps 1 to 3 would publish; it touches neither GitHub
-#                                nor the tags.
+#                                nor the tags. Its build goes to <OutDir>\dryrun (wiped first), never into <OutDir>
+#                                itself, so it may run for a version that is already out.
 # Needs: JDK 17+, the Android SDK (local.properties or ANDROID_HOME), python on PATH, keystore.properties (the
 # release key, never committed), and gh logged in for a real -Release.
 param(
@@ -76,6 +78,18 @@ function Invoke-Privacy([string[]]$PrivacyArgs) {
 
 # The committed tree at HEAD, as the public repo would get it: git archive (export-ignore applies), the forbidden
 # fence, and the privacy check on exactly those files. Returns the folder; the caller removes it.
+# Why the release outputs for version $v must not be written: its tag on Forgejo (or here) or its GitHub release.
+function Get-Published([string]$v) {
+    $why = @()
+    if (git -C $PSScriptRoot tag --list "v$v") { $why += "tag v$v exists in the private repo" }
+    # (through cmd: PowerShell 5.1 turns a redirected native stderr into an error under "Stop")
+    $t = (cmd /c "git -C `"$PSScriptRoot`" ls-remote --tags origin refs/tags/v$v 2>nul") -join ""
+    if ($t) { $why += "tag v$v exists on Forgejo" }
+    cmd /c "gh release view v$v --repo $PublicRepo >nul 2>&1"
+    if ($LASTEXITCODE -eq 0) { $why += "release v$v exists on $PublicRepo" }
+    return $why
+}
+
 function Export-Public {
     $stage = Join-Path $env:TEMP ("microdeck-public-" + [guid]::NewGuid().ToString("N").Substring(0, 8))
     New-Item -ItemType Directory -Force $stage | Out-Null
@@ -125,6 +139,15 @@ try {
         Invoke-Privacy @()
     } elseif ($DryRun) { throw "-DryRun goes with -Release." }
 
+    # where the files go: a dry run only ever writes <OutDir>\dryrun; anything else refuses a version that is out
+    if (-not $OutDir) { $OutDir = Join-Path ([Environment]::GetFolderPath("UserProfile")) "Downloads\MicroDeck\$ver" }
+    if ($DryRun) {
+        $OutDir = Join-Path $OutDir "dryrun"
+    } else {
+        $published = Get-Published $ver
+        if ($published) { throw ("Refusing to write ${OutDir}: " + ($published -join "; ") + ". Use -Release -DryRun to rebuild it into a dryrun folder.") }
+    }
+
     if (-not (Test-Path (Join-Path $PSScriptRoot "keystore.properties"))) {
         throw "keystore.properties is missing: a release build would be unsigned."
     }
@@ -159,7 +182,7 @@ try {
     Invoke-Privacy @("--public", "--dist")
 
     # 4. the files: versioned and constant names, each with a .sha256 ("<hash> *<name>")
-    if (-not $OutDir) { $OutDir = Join-Path ([Environment]::GetFolderPath("UserProfile")) "Downloads\MicroDeck\$ver" }
+    if ($DryRun -and (Test-Path $OutDir)) { Remove-Item $OutDir -Recurse -Force }
     New-Item -ItemType Directory -Force $OutDir | Out-Null
     $assets = @()
     foreach ($name in @("MicroDeck.apk", "MicroDeck-$ver.apk")) {

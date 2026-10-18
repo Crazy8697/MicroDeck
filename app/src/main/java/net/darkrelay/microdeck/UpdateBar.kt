@@ -11,9 +11,9 @@ import android.widget.TextView
 import android.widget.Toast
 
 /**
- * Drives view_update_bar: shows Updates.pending when it should be offered. Download and Release
- * notes open the browser (no install permission; Android installs from the downloaded file), Skip
- * remembers the version, Later hides the bar until the next launch.
+ * Drives view_update_bar: shows Updates.pending when it should be offered. Download opens the APK
+ * in the default browser itself (no install permission; Android installs from the downloaded file),
+ * Release notes is a plain link, Skip remembers the version, Later hides the bar until the next launch.
  */
 class UpdateBar(private val activity: Activity, private val root: View) {
 
@@ -21,8 +21,12 @@ class UpdateBar(private val activity: Activity, private val root: View) {
     private var shown: UpdateCheck.Release? = null
 
     init {
-        root.findViewById<Button>(R.id.update_download).setOnClickListener { shown?.let { open(it.apkUrl) } }
-        root.findViewById<Button>(R.id.update_notes).setOnClickListener { shown?.let { open(it.notesUrl) } }
+        root.findViewById<Button>(R.id.update_download).setOnClickListener {
+            shown?.let { open(Browsers.viewIntent(activity, it.apkUrl)) }
+        }
+        root.findViewById<Button>(R.id.update_notes).setOnClickListener {
+            shown?.let { open(Intent(Intent.ACTION_VIEW, Uri.parse(it.notesUrl))) }
+        }
         root.findViewById<Button>(R.id.update_skip).setOnClickListener {
             shown?.let { Updates.skip(activity, it.version) }
             hide()
@@ -49,9 +53,9 @@ class UpdateBar(private val activity: Activity, private val root: View) {
         root.visibility = View.GONE
     }
 
-    private fun open(url: String) {
+    private fun open(intent: Intent) {
         try {
-            activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            activity.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             Log.w("MicroDeck", "no browser for the update link", e)
             Toast.makeText(activity, R.string.about_no_browser, Toast.LENGTH_SHORT).show()

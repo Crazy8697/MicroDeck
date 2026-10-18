@@ -9,10 +9,13 @@ Turns your Android phone into a magnifier for soldering and fine work. Free, ope
 
 Installing:
 
-- Your browser may warn that the file "might be harmful". It says that about every APK downloaded
-  outside an app store.
+- Your browser will say the file might be harmful; tap "Download anyway". It says that about every
+  APK downloaded outside an app store. If the download sits at 100% and never finishes, open the link
+  in your browser instead of the GitHub app.
 - The first time, Android asks you to allow installs from your browser ("Install unknown apps").
   Allow it, then open the downloaded file to install.
+- When you install, Google Play Protect may say "App blocked to protect your device" because it
+  doesn't know the developer yet. Tap "More details", then "Install anyway".
 - Each release also has a `.sha256` file you can use to check the download.
 
 MicroDeck checks this page for new versions and shows a bar when one is out; the update downloads
