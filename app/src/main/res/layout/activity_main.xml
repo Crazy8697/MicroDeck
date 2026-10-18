@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <!-- full-bleed preview -->
+    <TextureView
+        android:id="@+id/preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <net.darkrelay.microdeck.GridOverlay
+        android:id="@+id/grid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_margin="12dp"
+        android:background="#99000000"
+        android:padding="6dp"
+        android:textColor="#E6E9EE"
+        android:textSize="12sp" />
+
+    <!-- update offer, under the status line and clear of the control panel -->
+    <include
+        layout="@layout/view_update_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="56dp" />
+
+    <!-- right-edge control column; centre of the preview stays clear -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/collapse"
+            android:layout_width="40dp"
+            android:layout_height="96dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/panel_bg"
+            android:text="▶"
+            android:textColor="#E6E9EE" />
+
+        <ScrollView
+            android:id="@+id/panel"
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/panel_bg">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <!-- lock stays live while locked; everything else is disabled -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ToggleButton android:id="@+id/lock" style="@style/PanelButton"
+                        android:textOff="Lock" android:textOn="Locked" />
+                    <ToggleButton android:id="@+id/freeze" style="@style/PanelButton"
+                        android:textOff="Freeze" android:textOn="Frozen" />
+                    <Button android:id="@+id/snap" style="@style/PanelButton" android:text="Snap" />
+                    <ToggleButton android:id="@+id/grid_toggle" style="@style/PanelButton"
+                        android:textOff="Grid" android:textOn="Grid ✓" />
+                </LinearLayout>
+
+                <!-- rotates only the camera image; the panel stays upright -->
+                <TextView style="@style/PanelLabel" android:text="Image rotation" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <Button android:id="@+id/rot_0" style="@style/PanelButton" android:text="0°" />
+                    <Button android:id="@+id/rot_90" style="@style/PanelButton" android:text="90°" />
+                    <Button android:id="@+id/rot_180" style="@style/PanelButton" android:text="180°" />
+                    <Button android:id="@+id/rot_270" style="@style/PanelButton" android:text="270°" />
+                </LinearLayout>
+
+                <TextView style="@style/PanelLabel" android:text="Lens" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <Button android:id="@+id/lens_macro" style="@style/PanelButton" android:text="Macro" />
+                    <Button android:id="@+id/lens_main" style="@style/PanelButton" android:text="Main" />
+                    <Button android:id="@+id/lens_tele" style="@style/PanelButton" android:text="Tele" />
+                </LinearLayout>
+
+                <TextView android:id="@+id/zoom_label" style="@style/PanelLabel" android:text="Zoom  1.00×" />
+                <SeekBar android:id="@+id/zoom" style="@style/PanelSlider" android:max="1000" />
+
+                <Switch android:id="@+id/af" style="@style/PanelSwitch" android:checked="true"
+                    android:text="Autofocus" />
+                <TextView android:id="@+id/focus_label" style="@style/PanelLabel" android:text="Focus  auto" />
+                <SeekBar android:id="@+id/focus" style="@style/PanelSlider" android:max="1000"
+                    android:enabled="false" />
+
+                <Switch android:id="@+id/torch" style="@style/PanelSwitch" android:text="Torch" />
+                <TextView android:id="@+id/torch_label" style="@style/PanelLabel" />
+                <SeekBar android:id="@+id/torch_level" style="@style/PanelSlider" />
+
+                <TextView android:id="@+id/ev_label" style="@style/PanelLabel" android:text="Exposure  0.0 EV" />
+                <SeekBar android:id="@+id/ev" style="@style/PanelSlider" android:max="48"
+                    android:progress="24" />
+
+                <TextView style="@style/PanelLabel" android:text="White balance" />
+                <Spinner android:id="@+id/wb" android:layout_width="match_parent"
+                    android:layout_height="56dp" />
+                <Switch android:id="@+id/awb_lock" style="@style/PanelSwitch" android:text="Lock white balance" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+                    <Button android:id="@+id/about" style="@style/PanelButton" android:text="@string/about_button" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</FrameLayout>

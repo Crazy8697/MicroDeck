@@ -1,0 +1,61 @@
+<resources>
+    <!-- big targets: everything is clicked through a scrcpy mirror with a mouse -->
+    <style name="PanelLabel">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">#9AA4B2</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:layout_marginTop">14dp</item>
+    </style>
+    <style name="PanelSlider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+    </style>
+    <style name="PanelButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+    <style name="PanelSwitch">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:textColor">#E6E9EE</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <!-- About screen, after Lazarus PDF's About box: light text over the DarkRelay banner,
+         dark rounded buttons (#252a33, #3a4150 border, 6 dp corners) -->
+    <style name="AboutText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:maxWidth">600dp</item>
+        <item name="android:lineSpacingMultiplier">1.15</item>
+        <item name="android:textColor">#E6EEF6</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="AboutButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:minWidth">150dp</item>
+        <item name="android:paddingStart">18dp</item>
+        <item name="android:paddingEnd">18dp</item>
+        <item name="android:background">@drawable/about_button</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">#E6E6E6</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="UpdateBarButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:paddingStart">14dp</item>
+        <item name="android:paddingEnd">14dp</item>
+        <item name="android:background">@drawable/about_button</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">#E6E6E6</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+</resources>

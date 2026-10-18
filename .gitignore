@@ -1,0 +1,25 @@
+.gradle/
+build/
+local.properties
+*.iml
+.idea/
+captures/
+.kotlin/
+*.jks
+*.keystore
+.env
+app/build/
+keystore.properties
+*.pem
+*.p12
+*.apk
+*.aab
+*.apks
+release/
+dist/
+*.log
+__pycache__/
+*.pyc
+
+# exact private values for tools/privacy_check.py, never committed
+tools/privacy-local.txt

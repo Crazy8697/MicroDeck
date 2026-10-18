@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- "MicroDeck X.Y.Z is available" with Download, Release notes, Skip this version and Later.
+     A bar inside the screen, never a popup; hidden until UpdateBar shows it. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/update_bar"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/update_bar_bg"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:visibility="gone">
+
+    <TextView
+        android:id="@+id/update_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginBottom="8dp"
+        android:textColor="#E6EEF6"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/update_download"
+            style="@style/UpdateBarButton"
+            android:layout_marginStart="0dp"
+            android:text="@string/update_download" />
+
+        <Button
+            android:id="@+id/update_notes"
+            style="@style/UpdateBarButton"
+            android:text="@string/update_notes" />
+
+        <Button
+            android:id="@+id/update_skip"
+            style="@style/UpdateBarButton"
+            android:text="@string/update_skip" />
+
+        <Button
+            android:id="@+id/update_later"
+            style="@style/UpdateBarButton"
+            android:text="@string/update_later" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">MicroDeck</string>
+    <string name="no_back_camera">No back camera</string>
+    <string name="about_button">About</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_tagline">Turns your Android phone into a magnifier for soldering and fine work.</string>
+    <string name="about_features">Pick the macro, main or telephoto lens, zoom with the slider or a pinch, and use autofocus or set the focus by hand. Adjust exposure and white balance (and lock it), turn on the grid overlay to line up tiny parts, and light your work with the torch, at an adjustable brightness on phones that support it. Freeze or rotate the image, and save snapshots to your gallery.</string>
+    <string name="about_privacy">Everything stays on this phone. Snapshots save to your gallery and nothing is uploaded.</string>
+    <string name="about_updates_label">Updates</string>
+    <string name="about_updates">the only network request is a check of GitHub\'s latest-release page for MicroDeck (at startup if \"Check for updates at startup\" is on, or when you tap Check for updates). If you choose to update, the download opens in your browser. No telemetry, no IDs, nothing about your photos or settings is sent.</string>
+    <string name="about_check_startup">Check for updates at startup</string>
+    <string name="about_check_now">Check for updates</string>
+    <string name="about_checking">Checking…</string>
+    <string name="update_available">MicroDeck %1$s is available</string>
+    <string name="update_download">Download</string>
+    <string name="update_notes">Release notes</string>
+    <string name="update_skip">Skip this version</string>
+    <string name="update_later">Later</string>
+    <string name="update_up_to_date">MicroDeck is up to date</string>
+    <string name="update_failed">Couldn\'t check for updates</string>
+    <string name="about_by">By</string>
+    <string name="about_darkrelay">DarkRelay</string>
+    <string name="about_license">Free software under the MIT License; it comes with NO WARRANTY.</string>
+    <string name="about_source">Source code:</string>
+    <string name="about_licenses">Licenses</string>
+    <string name="about_support">Support DarkRelay</string>
+    <string name="about_ok">OK</string>
+    <string name="licenses_missing">This license text is missing from the app.</string>
+    <string name="about_no_browser">No browser found to open the link</string>
+    <string name="torch_brightness">"Brightness  %1$d / %2$d"</string>
+</resources>

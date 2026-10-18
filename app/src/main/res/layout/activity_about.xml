@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Laid out like Lazarus PDF's About box: the DarkRelay banner behind, icon and name top left,
+     the text in one column, Licenses and Support bottom left, OK bottom right. -->
+<!-- merged straight into the window's content frame -->
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <net.darkrelay.microdeck.AboutBackdrop
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingStart="10dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="26dp"
+        android:paddingBottom="16dp">
+
+        <!-- the text scrolls on small screens; the buttons below stay put. The 16 dp padding (with
+             clipToPadding off) is room for the icon's glow, so the ScrollView doesn't clip it; the
+             text still starts 26 dp in and 22 dp down -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:fadeScrollbars="false"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="0dp">
+
+            <!-- clipChildren off here and on the header row: the icon's glow reaches past both -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <!-- 96 dp box: the 64 dp icon plus 16 dp each side for its glow; the negative
+                         margins keep the icon itself at the content edge -->
+                    <FrameLayout
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:layout_marginStart="-16dp"
+                        android:layout_marginTop="-16dp"
+                        android:layout_marginBottom="-16dp">
+
+                        <View
+                            android:id="@+id/about_icon_glow"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/about_icon_glow" />
+
+                        <ImageView
+                            android:id="@+id/about_icon"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/microdeck_icon" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="-6dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/about_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/app_name"
+                            android:textColor="#FFFFFF"
+                            android:textSize="28sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/about_version"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#9FB4C8"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/about_tagline"
+                    style="@style/AboutText"
+                    android:layout_marginTop="18dp"
+                    android:text="@string/about_tagline"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/about_features"
+                    style="@style/AboutText"
+                    android:text="@string/about_features" />
+
+                <TextView
+                    android:id="@+id/about_privacy"
+                    style="@style/AboutText"
+                    android:text="@string/about_privacy" />
+
+                <TextView
+                    android:id="@+id/about_updates"
+                    style="@style/AboutText" />
+
+                <Switch
+                    android:id="@+id/about_check_startup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="4dp"
+                    android:switchPadding="14dp"
+                    android:text="@string/about_check_startup"
+                    android:textColor="#E6EEF6"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/about_footer"
+                    style="@style/AboutText"
+                    android:layout_marginTop="16dp" />
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- the same update bar as on the camera screen, for a manual check's result -->
+        <include
+            layout="@layout/view_update_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/about_licenses"
+                style="@style/AboutButton"
+                android:text="@string/about_licenses" />
+
+            <Button
+                android:id="@+id/about_support"
+                style="@style/AboutButton"
+                android:layout_marginStart="10dp"
+                android:text="@string/about_support" />
+
+            <Button
+                android:id="@+id/about_check"
+                style="@style/AboutButton"
+                android:layout_marginStart="10dp"
+                android:text="@string/about_check_now" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/about_ok"
+                style="@style/AboutButton"
+                android:minWidth="120dp"
+                android:text="@string/about_ok" />
+        </LinearLayout>
+    </LinearLayout>
+</merge>

@@ -1,0 +1,87 @@
+package net.darkrelay.microdeck
+
+import org.json.JSONObject
+
+/**
+ * The rules for GitHub's releases/latest answer: which release, if any, to offer. No Android UI or
+ * network here, so it can be unit tested. A release is offered only when it is not a draft or a
+ * pre-release, its tag is a newer version than the installed one, and it carries both MicroDeck.apk
+ * and MicroDeck.apk.sha256.
+ */
+object UpdateCheck {
+
+    const val ASSET_APK = "MicroDeck.apk"
+    const val ASSET_SHA256 = "MicroDeck.apk.sha256"
+
+    data class Release(val version: String, val apkUrl: String, val notesUrl: String)
+
+    sealed class Result {
+        /** Nothing newer to offer (also: the latest release isn't a usable one). */
+        object UpToDate : Result()
+        data class Available(val release: Release) : Result()
+        /** No answer, a non-200 answer, or one that isn't the JSON we expect. */
+        object Failed : Result()
+    }
+
+    // 1 to 4 numeric parts with an optional leading v; anything else (like 1.2.0-beta) is not a release version
+    private val VERSION = Regex("""^[vV]?(\d{1,6})(?:\.(\d{1,6}))?(?:\.(\d{1,6}))?(?:\.(\d{1,6}))?$""")
+
+    /** "v1.2" -> [1, 2, 0, 0]; null if it isn't a plain version. */
+    fun parseVersion(s: String?): List<Int>? {
+        val m = VERSION.matchEntire(s?.trim() ?: return null) ?: return null
+        return m.groupValues.drop(1).map { if (it.isEmpty()) 0 else it.toInt() }
+    }
+
+    /** Negative, zero or positive like compareTo; null if either side isn't a version. */
+    fun compareVersions(a: String?, b: String?): Int? {
+        val x = parseVersion(a) ?: return null
+        val y = parseVersion(b) ?: return null
+        for (i in x.indices) if (x[i] != y[i]) return x[i].compareTo(y[i])
+        return 0
+    }
+
+    fun isNewer(candidate: String?, installed: String?): Boolean = (compareVersions(candidate, installed) ?: 0) > 0
+
+    /** A skipped version stays quiet; anything newer than it is offered again. */
+    fun shouldOffer(release: Release, skipped: String?): Boolean {
+        if (skipped.isNullOrBlank()) return true
+        return (compareVersions(release.version, skipped) ?: 1) > 0   // an unreadable skip doesn't hide anything
+    }
+
+    /**
+     * The usable release in a releases/latest body, or null when the release is a draft, a pre-release,
+     * has an odd tag or lacks one of the two assets. Throws on JSON that isn't an object.
+     */
+    fun parseRelease(body: String): Release? {
+        val o = JSONObject(body)
+        if (o.optBoolean("draft", false) || o.optBoolean("prerelease", false)) return null
+        val tag = o.optString("tag_name", "")
+        val version = parseVersion(tag)?.let { tag.trim().removePrefix("v").removePrefix("V") } ?: return null
+        val notes = o.optString("html_url", "").takeIf { isWebUrl(it) } ?: return null
+        val assets = o.optJSONArray("assets") ?: return null
+        var apk: String? = null
+        var sha: String? = null
+        for (i in 0 until assets.length()) {
+            val a = assets.optJSONObject(i) ?: continue
+            val url = a.optString("browser_download_url", "").takeIf { isWebUrl(it) } ?: continue
+            when (a.optString("name", "")) {
+                ASSET_APK -> apk = url
+                ASSET_SHA256 -> sha = url
+            }
+        }
+        if (apk == null || sha == null) return null
+        return Release(version, apk, notes)
+    }
+
+    /** What to show for a 200 answer's body, given the installed versionName. */
+    fun evaluate(body: String, installed: String): Result {
+        val release = try {
+            parseRelease(body)
+        } catch (e: Exception) {
+            return Result.Failed
+        } ?: return Result.UpToDate
+        return if (isNewer(release.version, installed)) Result.Available(release) else Result.UpToDate
+    }
+
+    private fun isWebUrl(s: String) = s.startsWith("https://") || s.startsWith("http://")
+}

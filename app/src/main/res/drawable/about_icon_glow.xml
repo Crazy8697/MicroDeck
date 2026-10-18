@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The icon's tile shape in cyan at 25% alpha, inset so its blur has room. AboutActivity blurs it
+     to match the site's card icons: filter: drop-shadow(0 0 14px rgba(25,194,230,.25)). -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:inset="16dp">
+    <shape android:shape="rectangle">
+        <solid android:color="#4019C2E6" />
+        <corners android:radius="12.8dp" />
+    </shape>
+</inset>
