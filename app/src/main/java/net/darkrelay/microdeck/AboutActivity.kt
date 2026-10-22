@@ -118,6 +118,16 @@ class AboutActivity : Activity() {
 
     private lateinit var updateBar: UpdateBar
 
+    override fun onResume() {
+        super.onResume()
+        updateBar.onResume()
+    }
+
+    override fun onPause() {
+        updateBar.onPause()
+        super.onPause()
+    }
+
     private fun toast(msg: Int) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 
     private fun SpannableStringBuilder.bold(text: String) {

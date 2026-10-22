@@ -168,6 +168,8 @@ class MainActivity : Activity() {
         logCapabilities()
         bindControls()
         updateBar = UpdateBar(this, findViewById(R.id.update_bar))
+        // a finished or stale update download goes; one waiting for the install permission carries on
+        UpdateInstaller.startup(this)
         if (cameraId == null) status.setText(R.string.no_back_camera)
     }
 
@@ -185,7 +187,7 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        updateBar.refresh()
+        updateBar.onResume()
         maybeCheckForUpdate()
         if (cameraId == null) return            // nothing to open; status already says why
         resumed = true
@@ -206,6 +208,7 @@ class MainActivity : Activity() {
     }
 
     override fun onPause() {
+        updateBar.onPause()
         resumed = false
         getSystemService(DisplayManager::class.java).unregisterDisplayListener(displayListener)
         closeCamera()

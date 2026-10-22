@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- "MicroDeck X.Y.Z is available" with Download, Release notes, Skip this version and Later.
+<!-- "MicroDeck X.Y.Z is available" with Download and install, Release notes, Skip this version and Later,
+     then the in-app update's progress and messages with Cancel, Allow, Retry and Open in browser.
      A bar inside the screen, never a popup; hidden until UpdateBar shows it. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/update_bar"
@@ -20,16 +21,63 @@
         android:textSize="15sp"
         android:textStyle="bold" />
 
+    <TextView
+        android:id="@+id/update_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginBottom="8dp"
+        android:maxWidth="560dp"
+        android:textColor="#B8C4D0"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+    <ProgressBar
+        android:id="@+id/update_progress"
+        style="@android:style/Widget.Material.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:max="100"
+        android:visibility="gone" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/update_cancel"
+            style="@style/UpdateBarButton"
+            android:layout_marginStart="0dp"
+            android:text="@string/update_cancel"
+            android:visibility="gone" />
+
+        <Button
             android:id="@+id/update_download"
             style="@style/UpdateBarButton"
             android:layout_marginStart="0dp"
             android:text="@string/update_download" />
+
+        <Button
+            android:id="@+id/update_allow"
+            style="@style/UpdateBarButton"
+            android:layout_marginStart="0dp"
+            android:text="@string/update_allow"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/update_retry"
+            style="@style/UpdateBarButton"
+            android:layout_marginStart="0dp"
+            android:text="@string/update_retry"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/update_browser"
+            style="@style/UpdateBarButton"
+            android:text="@string/update_browser"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/update_notes"

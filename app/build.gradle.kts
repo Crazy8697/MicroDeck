@@ -11,16 +11,18 @@ val keystoreProps = Properties().apply { if (keystoreFile.isFile) keystoreFile.i
 val hasReleaseKey = listOf("storeFile", "keyAlias", "storePassword", "keyPassword").all { keystoreProps.getProperty(it) != null }
 if (!hasReleaseKey) logger.lifecycle("MicroDeck: no keystore.properties, the release APK will be unsigned")
 
-// The update check asks GitHub for the latest MicroDeck release. Only a test build overrides that
-// with -PmicrodeckUpdateUrl=<url> (a local fake server); a normal build always uses GitHub. A test
-// build pointing at plain http also gets cleartext traffic, which a normal build never has.
+// The update check asks GitHub for the latest MicroDeck release and downloads from its tag path. A
+// release build always does. Only a DEBUG build can be pointed at a local fake server, with
+// -PmicrodeckTestServer=http://host:port (it then also gets cleartext traffic), and only a debug build
+// can be signed with the release key, with -PmicrodeckDebugReleaseKey=true, to test in-app updates.
 val realUpdateUrl = "https://api.github.com/repos/Crazy8697/MicroDeck/releases/latest"
-val updateUrlOverride = providers.gradleProperty("microdeckUpdateUrl").orNull
-if (updateUrlOverride != null) {
-    require(Regex("""^https?://[A-Za-z0-9.:/_-]+$""").matches(updateUrlOverride)) { "microdeckUpdateUrl: not a plain URL" }
-    logger.lifecycle("MicroDeck: TEST BUILD, update check goes to $updateUrlOverride")
+val realDownloadBase = "https://github.com/Crazy8697/MicroDeck/releases/download"
+val testServer = providers.gradleProperty("microdeckTestServer").orNull
+if (testServer != null) {
+    require(Regex("""^https?://[A-Za-z0-9.:_-]+$""").matches(testServer)) { "microdeckTestServer: not a plain http(s)://host:port" }
+    logger.lifecycle("MicroDeck: debug builds check $testServer for updates")
 }
-val updateUrl = updateUrlOverride ?: realUpdateUrl
+val debugReleaseKey = providers.gradleProperty("microdeckDebugReleaseKey").orNull == "true"
 
 android {
     namespace = "net.darkrelay.microdeck"
@@ -31,10 +33,11 @@ android {
         applicationId = "net.darkrelay.microdeck"
         minSdk = 33
         targetSdk = 36
-        versionCode = 11
-        versionName = "0.13.0"
-        buildConfigField("String", "UPDATE_URL", "\"$updateUrl\"")
-        manifestPlaceholders["cleartext"] = updateUrl.startsWith("http://").toString()
+        versionCode = 12
+        versionName = "1.0.0"
+        buildConfigField("String", "UPDATE_URL", "\"$realUpdateUrl\"")
+        buildConfigField("String", "DOWNLOAD_BASE", "\"$realDownloadBase\"")
+        manifestPlaceholders["cleartext"] = "false"
     }
 
     buildFeatures {
@@ -56,6 +59,14 @@ android {
     }
 
     buildTypes {
+        debug {
+            if (testServer != null) {
+                buildConfigField("String", "UPDATE_URL", "\"$testServer/repos/Crazy8697/MicroDeck/releases/latest\"")
+                buildConfigField("String", "DOWNLOAD_BASE", "\"$testServer/releases/download\"")
+                manifestPlaceholders["cleartext"] = testServer.startsWith("http://").toString()
+            }
+            if (debugReleaseKey) signingConfig = signingConfigs.findByName("release")
+        }
         release {
             isMinifyEnabled = false
             isDebuggable = false

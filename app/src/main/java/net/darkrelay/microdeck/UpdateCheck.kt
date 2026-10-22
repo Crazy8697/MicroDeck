@@ -15,9 +15,6 @@ object UpdateCheck {
     const val ASSET_SHA256 = "MicroDeck.apk.sha256"
     const val DOWNLOAD_BASE = "https://github.com/Crazy8697/MicroDeck/releases/download"
 
-    /** Where a release's APK is: the tag path with the fixed asset name. */
-    fun apkUrl(tag: String) = "$DOWNLOAD_BASE/$tag/$ASSET_APK"
-
     data class Release(val version: String, val apkUrl: String, val notesUrl: String)
 
     sealed class Result {
@@ -57,7 +54,7 @@ object UpdateCheck {
      * The usable release in a releases/latest body, or null when the release is a draft, a pre-release,
      * has an odd tag or lacks one of the two assets. Throws on JSON that isn't an object.
      */
-    fun parseRelease(body: String): Release? {
+    fun parseRelease(body: String, downloadBase: String = DOWNLOAD_BASE): Release? {
         val o = JSONObject(body)
         if (o.optBoolean("draft", false) || o.optBoolean("prerelease", false)) return null
         val tag = o.optString("tag_name", "").trim()
@@ -66,13 +63,13 @@ object UpdateCheck {
         val assets = o.optJSONArray("assets") ?: return null
         val names = (0 until assets.length()).mapNotNull { assets.optJSONObject(it)?.optString("name", "") }.toSet()
         if (ASSET_APK !in names || ASSET_SHA256 !in names) return null
-        return Release(version, apkUrl(tag), notes)
+        return Release(version, "$downloadBase/$tag/$ASSET_APK", notes)
     }
 
     /** What to show for a 200 answer's body, given the installed versionName. */
-    fun evaluate(body: String, installed: String): Result {
+    fun evaluate(body: String, installed: String, downloadBase: String = DOWNLOAD_BASE): Result {
         val release = try {
-            parseRelease(body)
+            parseRelease(body, downloadBase)
         } catch (e: Exception) {
             return Result.Failed
         } ?: return Result.UpToDate

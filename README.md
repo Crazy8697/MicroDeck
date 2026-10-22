@@ -18,8 +18,15 @@ Installing:
   doesn't know the developer yet. Tap "More details", then "Install anyway".
 - Each release also has a `.sha256` file you can use to check the download.
 
-MicroDeck checks this page for new versions and shows a bar when one is out; the update downloads
-through your browser the same way.
+### Updates
+
+MicroDeck checks this page for new versions (when it starts, which you can turn off on the About
+screen, and when you tap Check for updates) and shows a bar when one is out. Tap **Download and
+install**: MicroDeck downloads the new MicroDeck.apk from the release, checks it against the release's
+`.sha256` file and checks that it's signed by the same developer, then hands it to Android. The first
+time, Android asks you to allow MicroDeck to install apps ("Install unknown apps"); after that Android
+asks you to confirm each update. If you'd rather not allow it, **Open in browser** downloads the update
+the same way you installed MicroDeck.
 
 ### Install with Obtainium
 
@@ -40,11 +47,19 @@ Freeze or rotate the image, and save snapshots to your gallery (Pictures/MicroDe
 The controls are large, so it also works well with a mouse through PhoneDeck or another screen mirror
 on a PC monitor.
 
+## Permissions
+
+- **Camera**: the magnifier itself.
+- **Internet**: only the update check and, when you choose to update, the update download, both from
+  this repository on GitHub.
+- **Install unknown apps** (`REQUEST_INSTALL_PACKAGES`): only so MicroDeck can install its own updates.
+  Android doesn't grant it until you allow it, and still asks you to confirm each update.
+
 ## Privacy
 
-No accounts, no ads, no telemetry. Everything stays on your phone. The only network request is the
-update check, a look at this repository's latest release on GitHub; you can turn it off on the About
-screen.
+No accounts, no ads, no telemetry. Everything stays on your phone. The only network requests are the
+update check, a look at this repository's latest release on GitHub (you can turn it off on the About
+screen), and the update download when you choose to update.
 
 ## Requirements
 

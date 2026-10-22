@@ -13,8 +13,8 @@ import java.util.concurrent.Executors
  * The update check: one anonymous GET of GitHub's releases/latest for MicroDeck, on a background
  * thread with short timeouts. Nothing is sent but the request itself (no IDs, nothing about the
  * device, photos or settings). Every failure ends as Result.Failed; nothing here can crash the app.
- * The URL is BuildConfig.UPDATE_URL: GitHub in every normal build, only a -PmicrodeckUpdateUrl test
- * build points elsewhere.
+ * The URLs are BuildConfig.UPDATE_URL and DOWNLOAD_BASE: GitHub in every release build; only a debug
+ * build made with -PmicrodeckTestServer points them at a local fake server.
  */
 object Updates {
 
@@ -90,7 +90,7 @@ object Updates {
                 if (bytes.size > MAX_BODY) return UpdateCheck.Result.Failed
                 String(bytes, Charsets.UTF_8)
             }
-            val result = UpdateCheck.evaluate(body, BuildConfig.VERSION_NAME)
+            val result = UpdateCheck.evaluate(body, BuildConfig.VERSION_NAME, BuildConfig.DOWNLOAD_BASE)
             Log.i(TAG, "update check: ${result.javaClass.simpleName}")
             return result
         } finally {

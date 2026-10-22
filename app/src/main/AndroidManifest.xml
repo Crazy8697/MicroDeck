@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- only for the update check (GitHub's latest-release page) -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- only to install MicroDeck's own updates; Android asks the user once (Install unknown apps) -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <!-- to find the default browser for the update Download (package visibility, no permission) -->
     <queries>
         <intent>
@@ -44,5 +46,9 @@
             android:screenOrientation="behind"
             tools:ignore="DiscouragedApi"
             android:theme="@style/Theme.MicroDeck.About" />
+        <!-- the result of an update's install session; only Android's callback reaches it -->
+        <receiver
+            android:name=".InstallResultReceiver"
+            android:exported="false" />
     </application>
 </manifest>
